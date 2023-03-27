@@ -3,13 +3,26 @@ div {
     height: 50%;
     float: left;
 }
+div#donut {
+    width: 90%;
+    height: 90%;
+    background-color: white;
+    font-family: verdana, sans-serif;
+    color: grey;
+    border-style: solid; 
+    border-color: #3e5f85;
+    border-width: 2px;
+    transform: translate(5%, 0%);
+    font-size: 15px;
+    text-shadow: 0px 0px;
+    margin-bottom: 400px;
+}
 body{
-    background-image: linear-gradient(#7291ba, #a8c7f2);
-    color: white;
-    font-family: monospace;
+    background-color: whitesmoke ;
+    color: #536770;
+    font-family: verdana, sans-serif;
     text-align: center;
     font-size: 20px;
-    text-shadow: 2px 2px #3e5f85;
     margin-top: 3px;
 }
 

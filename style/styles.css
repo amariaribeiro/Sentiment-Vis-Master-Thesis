@@ -1,16 +1,16 @@
 div {
-    width: 49%;
-    height: 50%;
+    width: 0%;
+    height: 0%;
     float: left;
 }
 div#donut {
     width: 90%;
-    height: 90%;
+    height: 50%;
     background-color: white;
     font-family: verdana, sans-serif;
     color: grey;
-    border-style: solid; 
-    border-color: #3e5f85;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 20px;
     border-width: 2px;
     transform: translate(5%, 0%);
     font-size: 15px;
@@ -20,10 +20,13 @@ div#donut {
 body{
     background-color: whitesmoke ;
     color: #536770;
+    font-weight: bold;
     font-family: verdana, sans-serif;
     text-align: center;
     font-size: 20px;
     margin-top: 3px;
 }
+
+
 
 

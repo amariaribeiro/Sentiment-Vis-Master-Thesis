@@ -15,11 +15,15 @@ div#donut {
     transform: translate(5%, 0%);
     font-size: 15px;
     text-shadow: 0px 0px;
-    margin-bottom: 400px;
+}
+.box{
+    height: 50%;
+    width: 33.33%;
+    margin-bottom: 0.75%;
 }
 body{
     background-color: whitesmoke ;
-    color: #536770;
+    color: #444647;
     font-weight: bold;
     font-family: verdana, sans-serif;
     text-align: center;

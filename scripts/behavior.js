@@ -1,34 +1,50 @@
+//var air_counts;
+
+//airline_sentiment,negativereason,airline,name
+var boxes = ["first", "second", "third"];
+var count = 0;
+
 function init() {
-        
-	
-    createDonut();
-    console.log("adus");
-    d3.csv("/data/airline.csv", function(data) {
-        //console.log(data.airline);
-        //console.log(data.airline_sentiment);
-        //console.log(data.negativereason);
-        //console.log(data.name);
+    info = d3.csv("/data/airline.csv").then(function(data) {
+
+        var air_counts = d3.rollup(data, v=> v.length, d => d.airline, d => d.airline_sentiment);
+
+        //console.log(air_counts.keys())
+
+        for (const airline of air_counts.keys()) {
+            createDonut(airline, air_counts.get(airline));
+          }
     });
 }
 
-function createDonut() {
+//TODO: Adicionar restantes, adicionar legendas, adicionar transições
+function createDonut(airline, values) {
 
-    var data = [2, 4, 8, 10];
+    var airline = airline
+   
+    var data = Object.entries(Object.fromEntries(values));
+
+    //neutral, positive, negative
+    width = window.innerWidth*0.9 /3.1, 
+    height = window.innerHeight / 2.7,
+    innerRadius = Math.min(width, height) / 4,
+    outerRadius = Math.min(width, height) / 2.2;
 
     svg = d3.select("div#donut")
+            .select("#" + boxes[count])
 			.append("svg")
-        width = window.innerWidth/2.5, 
-        height = window.innerHeight/1.5,
-        innerRadius = Math.min(width, height) / 4
-        outerRadius = Math.min(width, height) / 2,
-        g = svg.append("g").attr("transform", "translate(" + width / 2.5 + "," + height / 2 + ")");
-        svg.attr("height", height)
-        svg.attr("width", width)
-
-    var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
+            .attr("height", height)
+            .attr("width", width)
+    
+        g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+ 
+    count++;    
+    var color = d3.scaleOrdinal(['#ffffff','#73e603','#F00408']);
 
     // Generate the pie
-    var pie = d3.pie();
+    var pie = d3.pie()
+        .value(d => d[1]);
+    
 
     // Generate the arcs
     var arc = d3.arc()
@@ -41,12 +57,22 @@ function createDonut() {
                 .enter()
                 .append("g")
                 .attr("class", "arc")
+                
 
     //Draw arc paths
     arcs.append("path")
         .attr("fill", function(d, i) {
             return color(i);
         })
-        .attr("d", arc);
+        .attr("d", arc).style('stroke', '#444647')
+        .style('stroke-width', 1.5);;
 
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .style('fill', '#444647')
+        .transition()
+        .duration(200)
+        .text(airline)
+        .attr("font-size", "12px")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 }

@@ -4,10 +4,7 @@ var count = 0;
 var start = true;
 
 function init() {
-    console.log("bom dia")
     info = d3.csv("../donuts/data/airline.csv").then(function(data) {
-
-        console.log("ola")
 
         var air_counts = d3.rollup(data, v=> v.length, d => d.airline, d => d.airline_sentiment);
         var totals = d3.rollup(data, v => v.length, d => d.airline);

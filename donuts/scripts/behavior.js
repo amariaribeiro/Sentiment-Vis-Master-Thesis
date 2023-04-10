@@ -31,7 +31,7 @@ function createDonut(airline, data) {
 
     width = window.innerWidth*0.9; 
 
-    //create leegend in start
+    //create legend in start
     if(start){
         svg = d3.select("div#donut")
                 .select("#legend")
@@ -101,7 +101,7 @@ function createDonut(airline, data) {
 
     //neutral, positive, negative
     width = window.innerWidth*0.9 /3.1, 
-    height = window.innerHeight / 2.9,
+    height = window.innerHeight / 3,
     innerRadius = Math.min(width, height) / 4,
     outerRadius = Math.min(width, height) / 2.1;
         

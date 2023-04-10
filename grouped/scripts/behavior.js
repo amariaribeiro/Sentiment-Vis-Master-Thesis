@@ -16,7 +16,65 @@ function createGrouped(values, data) {
     const sentiments = ["neutral", "positive", "negative"]
 
     width = window.innerWidth*0.9, 
-    height = window.innerHeight*0.75;
+    height = window.innerHeight*0.70;
+
+    svg = d3.select("div#grouped")
+                .select("#legend")
+                .append("svg")
+                .attr("height", 30)
+                .attr("width", width)
+
+                svg.append("circle").attr("cx", width/2 - 40).attr("cy",12).attr("r", 10)
+                    .style("fill", "#ffffff")
+                    .style('stroke', '#444647')
+                    .style('stroke-width', 1)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/2 - 25))
+                    .attr("y", 17)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                    .style('fill', '#444647')
+                    .text("Neutral")
+                    .attr("font-size", "12px")
+
+
+                svg.append("circle").attr("cx", width/3 - 40).attr("cy",12).attr("r", 10)
+                    .style("fill", "#73e603")
+                    .style('stroke', '#444647')
+                    .style('stroke-width', 1)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/3 - 25))
+                    .attr("y", 17)
+                    .style("opacity", 0)
+                    .style('fill', '#444647')
+                    .transition().duration(1000).style("opacity", 1)
+                    .text("Positive")
+                    .attr("font-size", "12px");
+
+                svg.append("circle").attr("cx", width/3*2 - 40).attr("cy",12).attr("r", 10)
+                    .style("fill", "#F00408")
+                    .style('stroke', '#444647')
+                    .style('stroke-width', 1)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/3*2 - 25))
+                    .attr("y", 17)
+                    .style('fill', '#444647')
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                    .text("Negative")
+                    .attr("font-size", "12px")
     
     var svg = d3.select("#grouped")
     .append("svg")
@@ -64,8 +122,11 @@ function createGrouped(values, data) {
         .data(function(d) { return sentiments.map(function(key) { return {key: key, value: d[1].get(key)}; }); })
         .enter().append("rect")
           .attr("x", function(d) { console.log(d); return xSubgroup(d.key); })
-          .attr("y", function(d) { return y(d.value); })
           .attr("width", xSubgroup.bandwidth())
+          .attr("y", function(d) { return y(0); })
+          .transition()
+          .duration(1000)
+          .attr("y", function(d) { return y(d.value); })
           .attr("height", function(d) { return height*0.8 - y(d.value); })
           .attr("fill", function(d) { return color(d.key); })
           .attr("stroke", "grey");

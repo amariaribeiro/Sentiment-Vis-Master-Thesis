@@ -33,8 +33,6 @@ function init() {
     });
 }
 
-// TODO transitions, tooltip, highlight, change first
-
 function createStackedBarChart(data){
     var data = data;
 
@@ -43,7 +41,65 @@ function createStackedBarChart(data){
     var groups = d3.map(data, function(d){return(d.airline)})
 
     width = window.innerWidth*0.9, 
-    height = window.innerHeight*0.75,
+    height = window.innerHeight*0.70,
+
+    svg = d3.select("div#stacked")
+                .select("#legend")
+                .append("svg")
+                .attr("height", 30)
+                .attr("width", width)
+
+                svg.append("circle").attr("cx", width/2 - 40).attr("cy",12).attr("r", 10)
+                    .style("fill", "#ffffff")
+                    .style('stroke', '#444647')
+                    .style('stroke-width', 1)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/2 - 25))
+                    .attr("y", 17)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                    .style('fill', '#444647')
+                    .text("Neutral")
+                    .attr("font-size", "12px")
+
+
+                svg.append("circle").attr("cx", width/3 - 40).attr("cy",12).attr("r", 10)
+                    .style("fill", "#73e603")
+                    .style('stroke', '#444647')
+                    .style('stroke-width', 1)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/3 - 25))
+                    .attr("y", 17)
+                    .style("opacity", 0)
+                    .style('fill', '#444647')
+                    .transition().duration(1000).style("opacity", 1)
+                    .text("Positive")
+                    .attr("font-size", "12px");
+
+                svg.append("circle").attr("cx", width/3*2 - 40).attr("cy",12).attr("r", 10)
+                    .style("fill", "#F00408")
+                    .style('stroke', '#444647')
+                    .style('stroke-width', 1)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/3*2 - 25))
+                    .attr("y", 17)
+                    .style('fill', '#444647')
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                    .text("Negative")
+                    .attr("font-size", "12px")
         
     svg = d3.select("div#stacked")
 			.append("svg")
@@ -85,9 +141,12 @@ function createStackedBarChart(data){
           .data(function(d) { return d; })
           .enter().append("rect")
             .attr("x", function(d) { return x(d.data.airline); })
+            .attr("y", function(d) { return y(0); })
+            .attr("width",x.bandwidth())
+            .transition()
+            .duration(1000)
             .attr("y", function(d) { return y(d[1]); })
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-            .attr("width",x.bandwidth())
             .attr("stroke", "grey")
-    
+          
 }

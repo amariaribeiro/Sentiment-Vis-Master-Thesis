@@ -138,7 +138,7 @@ function createDonut(airline, data) {
                 .data(pie(data))
                 .enter()
                 .append("g")
-                .attr("class", "arc")
+                .attr("class", function(d){ return "arc " + d.data[0] })
                 .attr("d", arc)
                 .on("mouseover", function (event, d) {
 
@@ -149,6 +149,9 @@ function createDonut(airline, data) {
                         })
                         .style("left", event.pageX - 130 + "px")
                         .style("top", event.pageY - 28 + "px");
+                    
+                    d3.selectAll(".arc").style("opacity", 0.2)
+                    d3.selectAll("."+d.data[0]).style("opacity",1)
                 })
                 .on("mousemove", function (d) {
                     // Position the tooltip
@@ -157,6 +160,9 @@ function createDonut(airline, data) {
                   })
                 .on("mouseleave", function (d) {
                     tooltip.transition().duration(200).style("opacity", 0);
+
+                    d3.selectAll(".arc")
+                    .style("opacity",1)
                 })               
 
     //Draw arc paths

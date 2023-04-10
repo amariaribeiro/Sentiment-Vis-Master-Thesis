@@ -4,8 +4,6 @@ function init() {
     info = d3.csv("../donuts/data/airline.csv").then(function(data) {
 
         var air_counts = d3.rollup(data, v=> v.length, d => d.airline, d => d.airline_sentiment);
-        
-        console.log(info);
 
         createGrouped(air_counts, info);
     });
@@ -108,9 +106,7 @@ function createGrouped(values, data) {
     var color = d3.scaleOrdinal()
         .domain(sentiments)
         .range(['#ffffff','#73e603','#F00408'])
-    
-    console.log(values)
-    console.log(data)
+
     
     svg.append("g")
         .selectAll("g")
@@ -121,9 +117,18 @@ function createGrouped(values, data) {
         .selectAll("rect")
         .data(function(d) { return sentiments.map(function(key) { return {key: key, value: d[1].get(key)}; }); })
         .enter().append("rect")
-          .attr("x", function(d) { console.log(d); return xSubgroup(d.key); })
+          .attr("class", function(d){ return "myRect " + d.key })  
+          .attr("x", function(d) { return xSubgroup(d.key); })
           .attr("width", xSubgroup.bandwidth())
           .attr("y", function(d) { return y(0); })
+          .on("mouseover", function (event,d) { 
+               d3.selectAll(".myRect").style("opacity", 0.2)
+               d3.selectAll("."+d.key).style("opacity",1)
+          })
+          .on("mouseleave", function (event,d) { // When user do not hover anymore
+              d3.selectAll(".myRect")
+            .style("opacity",1)
+            })
           .transition()
           .duration(1000)
           .attr("y", function(d) { return y(d.value); })

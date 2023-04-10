@@ -130,7 +130,7 @@ function createStackedBarChart(data){
     const stackedData = d3.stack()
         .keys(sentiments)
         (data)
-    
+
     svg.append("g")
         .selectAll("g")
         .data(stackedData)
@@ -140,6 +140,15 @@ function createStackedBarChart(data){
           .selectAll("rect")
           .data(function(d) { return d; })
           .enter().append("rect")
+          .on("mouseover", function (event,d) { 
+            const subGroupName = d3.select(this.parentNode).datum().key
+               d3.selectAll(".myRect").style("opacity", 0.2)
+               d3.selectAll("."+subGroupName).style("opacity",1)
+          })
+          .on("mouseleave", function (event,d) { // When user do not hover anymore
+              d3.selectAll(".myRect")
+            .style("opacity",1)
+            })
             .attr("x", function(d) { return x(d.data.airline); })
             .attr("y", function(d) { return y(0); })
             .attr("width",x.bandwidth())
@@ -148,5 +157,5 @@ function createStackedBarChart(data){
             .attr("y", function(d) { return y(d[1]); })
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("stroke", "grey")
-          
+            
 }

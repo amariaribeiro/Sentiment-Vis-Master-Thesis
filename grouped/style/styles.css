@@ -1,0 +1,51 @@
+div {
+    width: 0%;
+    height: 0%;
+    float: left;
+}
+div#grouped {
+    width: 90%;
+    height: 50%;
+    background-color: white;
+    font-family: verdana, sans-serif;
+    color: grey;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 20px;
+    border-width: 2px;
+    transform: translate(5%, 0%);
+    font-size: 15px;
+    text-shadow: 0px 0px;
+}
+.legend{
+    width: 100%;
+    left: 50%;
+}
+.tooltip{
+    position: absolute;
+    text-align: center;
+    width: 10%;
+    height: 5%;
+    padding: 5px;
+    font: 14px sans-serif;
+    color: #444647;
+    background: white;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #444647;
+    border-radius: 20px;
+    pointer-events: none;
+    text-shadow: 0px 0px;
+}
+body{
+    background-color: whitesmoke ;
+    color: #444647;
+    font-weight: bold;
+    font-family: verdana, sans-serif;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 3px;
+}
+
+
+
+

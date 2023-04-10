@@ -33,7 +33,7 @@ function init() {
     });
 }
 
-//transitions, tooltip, highlight, change first
+// TODO transitions, tooltip, highlight, change first
 
 function createStackedBarChart(data){
     var data = data;

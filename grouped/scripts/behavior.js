@@ -1,6 +1,12 @@
 //airline_sentiment,negativereason,airline,name
 
+//colors
+red_green = ['#ffffff','#73e603','#F00408']
+yellow_blue = ['#ffffff', '#F6e32c', '#2CBBF6']
+
 function init() {
+    color_scheme = yellow_blue;
+
     info = d3.csv("../donuts/data/airline.csv").then(function(data) {
 
         var air_counts = d3.rollup(data, v=> v.length, d => d.airline, d => d.airline_sentiment);
@@ -46,7 +52,7 @@ function createGrouped(values, data) {
 
 
                 svg.append("circle").attr("cx", width/3 - 40).attr("cy",12).attr("r", 10)
-                    .style("fill", "#73e603")
+                    .style("fill", color_scheme[1])
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
                     .style("opacity", 0)
@@ -63,7 +69,7 @@ function createGrouped(values, data) {
                     .attr("font-size", "12px");
 
                 svg.append("circle").attr("cx", width/3*2 - 40).attr("cy",12).attr("r", 10)
-                    .style("fill", "#F00408")
+                    .style("fill", color_scheme[2])
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
                     .style("opacity", 0)
@@ -110,7 +116,7 @@ function createGrouped(values, data) {
     
     var color = d3.scaleOrdinal()
         .domain(sentiments)
-        .range(['#ffffff','#73e603','#F00408'])
+        .range(color_scheme)
 
     
     svg.append("g")

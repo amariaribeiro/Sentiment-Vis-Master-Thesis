@@ -16,6 +16,11 @@ function createGrouped(values, data) {
     width = window.innerWidth*0.9, 
     height = window.innerHeight*0.70;
 
+    tooltip = d3.select("body")
+			.append("div")
+			.attr("class", "tooltip")
+			.style("opacity", 0),
+
     svg = d3.select("div#grouped")
                 .select("#legend")
                 .append("svg")
@@ -124,10 +129,25 @@ function createGrouped(values, data) {
           .on("mouseover", function (event,d) { 
                d3.selectAll(".myRect").style("opacity", 0.2)
                d3.selectAll("."+d.key).style("opacity",1)
+
+               tooltip.transition().duration(200).style("opacity", 0.9);
+               tooltip
+                   .html(function (e) {
+                       return "Sentiment " + d.key + "<br>" + d.value + " people";
+                   })
+                   .style("left", event.pageX - 130 + "px")
+                   .style("top", event.pageY - 28 + "px");
+          })
+          .on("mousemove", function (d) {
+            // Position the tooltip
+            tooltip.style("left", event.pageX + 10 + "px")
+              .style("top", event.pageY + 10 + "px");
           })
           .on("mouseleave", function (event,d) { // When user do not hover anymore
               d3.selectAll(".myRect")
             .style("opacity",1)
+
+            tooltip.transition().duration(200).style("opacity", 0);
             })
           .transition()
           .duration(1000)

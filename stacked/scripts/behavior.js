@@ -43,6 +43,11 @@ function createStackedBarChart(data){
     width = window.innerWidth*0.9, 
     height = window.innerHeight*0.70,
 
+    tooltip = d3.select("body")
+			.append("div")
+			.attr("class", "tooltip")
+			.style("opacity", 0),
+
     svg = d3.select("div#stacked")
                 .select("#legend")
                 .append("svg")
@@ -141,13 +146,32 @@ function createStackedBarChart(data){
           .data(function(d) { return d; })
           .enter().append("rect")
           .on("mouseover", function (event,d) { 
+            
             const subGroupName = d3.select(this.parentNode).datum().key
+            const value = d.data[subGroupName];
+
                d3.selectAll(".myRect").style("opacity", 0.2)
                d3.selectAll("."+subGroupName).style("opacity",1)
+            
+               tooltip.transition().duration(200).style("opacity", 0.9);
+               tooltip
+                   .html(function (e) {
+                       return "Sentiment " + subGroupName + "<br>" + value.toFixed(2) + "%";
+                   })
+                   .style("left", event.pageX - 130 + "px")
+                   .style("top", event.pageY - 28 + "px");
+
+          })
+          .on("mousemove", function (d) {
+            // Position the tooltip
+            tooltip.style("left", event.pageX + 10 + "px")
+              .style("top", event.pageY + 10 + "px");
           })
           .on("mouseleave", function (event,d) { // When user do not hover anymore
               d3.selectAll(".myRect")
             .style("opacity",1)
+
+            tooltip.transition().duration(200).style("opacity", 0);
             })
             .attr("x", function(d) { return x(d.data.airline); })
             .attr("y", function(d) { return y(0); })

@@ -8,7 +8,7 @@ function init() {
 
     color_scheme = yellow_blue;
 
-    info = d3.csv("../stacked/data/airline.csv").then(function(data) {
+    info = d3.csv("../../data/airline.csv").then(function(data) {
         
         var air_counts = d3.flatRollup(data, v=> v.length, d => d.airline, d => d.airline_sentiment)
             

@@ -8,7 +8,7 @@ red_green = ['#ffffff','#73e603','#F00408']
 yellow_blue = ['#ffffff', '#F6e32c', '#2CBBF6']
 
 function init() {
-    color_scheme = yellow_blue;
+    color_scheme = red_green;
 
     info = d3.csv("../../data/airline.csv").then(function(data) {
 

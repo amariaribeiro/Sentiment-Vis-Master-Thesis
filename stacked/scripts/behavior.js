@@ -1,12 +1,43 @@
 //airline_sentiment,negativereason,airline,name
 
 //colors
-red_green = ['#ffffff','#73e603','#F00408']
-yellow_blue = ['#ffffff', '#F6e32c', '#2CBBF6']
+red_green = false
+yellow_blue = true
+
+//legend colors
+rg = ['#ffffff','#73e603','#F00408']
+yb = ['#ffffff', '#F6e32c', '#2CBBF6']
+
+//sentiments button values
+neutral = ["neutral", "positive", "negative"]
+positive = ["positive", "negative", "neutral"]
+negative = ["negative", "neutral", "positive"]
+
+//sentiments button flag
+b_positive = false
+b_negative = false
+b_neutral = false
+
+ aux = [];
+ 
+ // TODO : sentimentos valores mudam cores não;
 
 function init() {
 
-    color_scheme = yellow_blue;
+    legend = []
+
+    if(red_green){
+        legend = rb;
+    } else if(yellow_blue){
+        legend = yb
+    }
+
+
+    color_scheme =  []
+
+    sentiments = neutral;
+
+    color();
 
     info = d3.csv("../../data/airline.csv").then(function(data) {
         
@@ -24,7 +55,7 @@ function init() {
 
         const format = air_counts.map(([airline, sentiment, count]) => ({airline, sentiment, count}));
 
-        const aux = format.reduce((acc, { airline, sentiment, count }) => {
+        aux = format.reduce((acc, { airline, sentiment, count }) => {
             if (!acc[airline]) {
               acc[airline] = {airline};
               acc[airline].airline = airline;
@@ -39,10 +70,55 @@ function init() {
     });
 }
 
+function color(){
+
+    if (red_green){
+        for (x = 0; x < sentiments.length; x++){
+            if(sentiments[x] == "neutral"){
+                color_scheme[x] = '#ffffff'
+            }else if (sentiments[x] == "positive"){
+                color_scheme[x] = '#73e603'
+            }else if (sentiments[x] == "negative"){
+                color_scheme[x] = '#F00408'
+            }
+        }
+
+    } else if (yellow_blue){
+        for (x = 0; x < sentiments.length; x++){
+            if(sentiments[x] == "neutral"){
+                color_scheme[x] = '#ffffff'
+            }else if (sentiments[x] == "positive"){
+                color_scheme[x] = '#F6e32c'
+            }else if (sentiments[x] == "negative"){
+                color_scheme[x] = '#2CBBF6'
+            }
+        }
+
+    }
+
+
+}
+
+function handlingButton(sentiment){
+
+    plot = d3.select("div#stacked").selectAll("svg");
+    plot.remove()
+
+    if (sentiment == "positive"){
+        sentiments = positive;
+    } else if (sentiment == "negative"){
+        sentiments = negative;
+    } else if (sentiment == "neutral"){
+        sentiments = neutral;
+    }
+
+    color();
+
+    createStackedBarChart(Object.values(aux));
+}
+
 function createStackedBarChart(data){
     var data = data;
-
-    const sentiments = ["neutral", "positive", "negative"]
 
     var groups = d3.map(data, function(d){return(d.airline)})
 
@@ -79,7 +155,7 @@ function createStackedBarChart(data){
 
 
                 svg.append("circle").attr("cx", width/3 - 40).attr("cy",12).attr("r", 10)
-                    .style("fill", color_scheme[1])
+                    .style("fill", legend[1])
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
                     .style("opacity", 0)
@@ -96,7 +172,7 @@ function createStackedBarChart(data){
                     .attr("font-size", "12px");
 
                 svg.append("circle").attr("cx", width/3*2 - 40).attr("cy",12).attr("r", 10)
-                    .style("fill", color_scheme[2])
+                    .style("fill", legend[2])
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
                     .style("opacity", 0)

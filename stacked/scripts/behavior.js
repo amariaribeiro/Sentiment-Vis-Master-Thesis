@@ -20,8 +20,6 @@ b_neutral = false
 
  aux = [];
  
- // TODO : sentimentos valores mudam cores não;
-
 function init() {
 
     legend = []

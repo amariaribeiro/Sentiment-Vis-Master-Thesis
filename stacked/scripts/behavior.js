@@ -1,8 +1,8 @@
 //airline_sentiment,negativereason,airline,name
 
 //colors
-red_green = false
-yellow_blue = true
+red_green = true
+yellow_blue = false
 
 //legend colors
 rg = ['#ffffff','#73e603','#F00408']
@@ -13,19 +13,31 @@ neutral = ["neutral", "positive", "negative"]
 positive = ["positive", "negative", "neutral"]
 negative = ["negative", "neutral", "positive"]
 
+//airlines list
+airlines = ["American", "Delta", "Southwest", "United", "US Airways", "Virgin America"]
+
 //sentiments button flag
 b_positive = false
 b_negative = false
 b_neutral = false
 
  aux = [];
- 
+
+var american;
+var delta;
+var southwest;
+var united;
+var us;
+var virgin;
+
+//TODO: por o click a funcionar e seguir para o click das legendas e fazer a questão das cores; visão geral da wordcloud
+
 function init() {
 
     legend = []
 
     if(red_green){
-        legend = rb;
+        legend = rg
     } else if(yellow_blue){
         legend = yb
     }
@@ -37,11 +49,24 @@ function init() {
 
     color();
 
-    info = d3.csv("../../data/airline.csv").then(function(data) {
+    Promise.all([d3.csv("../../data/airline.csv"), 
+                d3.csv("../../data/american.csv"),
+                d3.csv("../../data/delta.csv"),
+                d3.csv("../../data/southwest.csv"),
+                d3.csv("../../data/united.csv"),
+                d3.csv("../../data/us.csv"),
+                d3.csv("../../data/virgin.csv")]).then(function(data){
+
+        american = data[1];
+        delta = data[2];
+        southwest = data[3];
+        united = data[4];
+        us = data[5];
+        virgin = data[6];
         
-        var air_counts = d3.flatRollup(data, v=> v.length, d => d.airline, d => d.airline_sentiment)
+        var air_counts = d3.flatRollup(data[0], v=> v.length, d => d.airline, d => d.airline_sentiment)
             
-        var totals = d3.flatRollup(data, v => v.length, d => d.airline);
+        var totals = d3.flatRollup(data[0], v => v.length, d => d.airline);
 
         for (const x in air_counts){
             for(const y in totals){
@@ -62,9 +87,8 @@ function init() {
             acc[airline][sentiment] = count;
             return acc;
           }, {});
-
-        createStackedBarChart(Object.values(aux));
-
+        
+        createStackedBarChart(Object.values(aux), american);
     });
 }
 
@@ -120,8 +144,8 @@ function createStackedBarChart(data){
 
     var groups = d3.map(data, function(d){return(d.airline)})
 
-    width = window.innerWidth*0.9, 
-    height = window.innerHeight*0.70,
+    width = (window.innerWidth*0.9)/2.1, 
+    height = window.innerHeight*0.68,
 
     tooltip = d3.select("body")
 			.append("div")
@@ -186,7 +210,7 @@ function createStackedBarChart(data){
                     .text("Negative")
                     .attr("font-size", "12px")
         
-    svg = d3.select("div#stacked")
+    svg = d3.select("div#stacked").select("#st")
 			.append("svg")
             .attr("height", height)
             .attr("width", width)
@@ -225,6 +249,7 @@ function createStackedBarChart(data){
           .selectAll("rect")
           .data(function(d) { return d; })
           .enter().append("rect")
+          .on("click", handleClick)
           .on("mouseover", function (event,d) { 
             
             const subGroupName = d3.select(this.parentNode).datum().key
@@ -261,5 +286,49 @@ function createStackedBarChart(data){
             .attr("y", function(d) { return y(d[1]); })
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("stroke", "grey")
-            
+
+        createWordcloud(width, height, american);
+    }
+
+    function handleClick(event, d) {
+        console.log(d.data.airline)
+    }
+
+    function createWordcloud(width, height, terms) {
+        var svg = d3.select("div#stacked").select("#word").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("transform", "translate(" + - width*0.05 + "," + height*0.02 + ")");
+
+        
+        var layout = d3.layout.cloud()
+          .size([width, height])
+          .words(terms)
+          .padding(11)       
+          .rotate(0)
+          .fontSize(function(d) { return d.count;})   
+          .font("Verdana") 
+          .text(function(d) { return d.word; }) 
+          .on("end", draw);
+        layout.start();
+    
+        function draw(words) {
+          svg
+            .append("g")
+              .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+              .selectAll("text")
+                .data(words)
+              .enter().append("text")
+                .style("font-size", function(d) { return d.count; })
+                .style("fill", "#808080")
+                .attr("text-anchor", "middle")
+                .style("font-family", "Verdana")
+                .attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.word; });
+    }
 }

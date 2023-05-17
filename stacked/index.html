@@ -17,6 +17,10 @@
 	<!-- <script language="JavaScript" type="text/javascript" src="libs/topojson.v3.min.js"></script> -->
 	<script src="//d3js.org/topojson.v1.min.js"></script>
 	<script src="https://d3js.org/d3-collection.v2.min.js"></script>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
+
+
 
 	<!-- JS -->
 	<script language="JavaScript" type="text/javascript" src="scripts/behavior.js"></script>
@@ -31,9 +35,15 @@
 	<p>Sentiment Percentage per Airline</p>
 	<div id="legend" class="legend">
 	</div>
+	<div id="click" class="click">
 		<button type="button" class="button" onclick="handlingButton('positive')">Positive</button>
 		<button type="button" class="button" onclick="handlingButton('negative')">Negative</button>
 		<button type="button" class="button" onclick="handlingButton('neutral')">Neutral</button>
+	</div>
+	<div id="st">
+	</div>
+	<div id="word">
+	</div>
 </div>
 </body>
 

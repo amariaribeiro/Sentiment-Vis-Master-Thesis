@@ -4,6 +4,10 @@
 red_green = true
 yellow_blue = false
 
+//selected for terms
+var selected;
+var selected_leg;
+
 //legend colors
 rg = ['#ffffff','#73e603','#F00408']
 yb = ['#ffffff', '#F6e32c', '#2CBBF6']
@@ -21,16 +25,33 @@ b_positive = false
 b_negative = false
 b_neutral = false
 
- aux = [];
+aux = [];
 
-var american;
-var delta;
-var southwest;
-var united;
-var us;
-var virgin;
+var max;
 
-//TODO: por o click a funcionar e seguir para o click das legendas e fazer a questão das cores; visão geral da wordcloud
+let data_t = {
+    "american": {1: null},
+    "delta": {1: null},
+    "southwest": {1: null},
+    "united": {1: null},
+    "us": {1: null},
+    "virgin": {1: null}
+    };
+
+let conv = {
+    "American": {1: "american"},
+    "Delta": {1: "delta"},
+    "Southwest": {1: "southwest"},
+    "United": {1: "united"},
+    "US Airways": {1: "us"},
+    "Virgin America": {1: "virgin"}
+    };
+
+var terms;
+
+var all_air;
+
+//TODO: fazer tamanho com percentagens
 
 function init() {
 
@@ -57,15 +78,27 @@ function init() {
                 d3.csv("../../data/us.csv"),
                 d3.csv("../../data/virgin.csv")]).then(function(data){
 
-        american = data[1];
-        delta = data[2];
-        southwest = data[3];
-        united = data[4];
-        us = data[5];
-        virgin = data[6];
+        data_t["american"][1] = data[1];
+        data_t["delta"][1] = data[2];
+        data_t["southwest"][1] = data[3];
+        data_t["united"][1] = data[4];
+        data_t["us"][1] = data[5];
+        data_t["virgin"][1] = data[6];
+
+        aux1 = data[1].concat(data[2]).concat(data[3]).concat(data[4]).concat(data[5]).concat(data[6])
         
+        all_air = d3.flatRollup(aux1, v=> d3.sum(v, function(d) {return d.count}), d=> d.word, d=>d.sent)
+       
+        all_air.sort(function (a, b){
+
+            if (a[2]> b[2]) {return -1;} 
+            else if (a[2]< b[2]) { return 1;} 
+            else  return 0;
+        });
+
+        all_air =  all_air.slice(0,60);
+
         var air_counts = d3.flatRollup(data[0], v=> v.length, d => d.airline, d => d.airline_sentiment)
-            
         var totals = d3.flatRollup(data[0], v => v.length, d => d.airline);
 
         for (const x in air_counts){
@@ -87,8 +120,10 @@ function init() {
             acc[airline][sentiment] = count;
             return acc;
           }, {});
-        
-        createStackedBarChart(Object.values(aux), american);
+
+        terms = all_air;
+
+        createStackedBarChart(Object.values(aux));
     });
 }
 
@@ -133,6 +168,7 @@ function handlingButton(sentiment){
     } else if (sentiment == "neutral"){
         sentiments = neutral;
     }
+
 
     color();
 
@@ -223,7 +259,11 @@ function createStackedBarChart(data){
   
     svg.append("g")
         .attr("transform", `translate(0, ${height*0.8})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0));
+        .call(d3.axisBottom(x).tickSizeOuter(0))
+        .selectAll("text")
+            .attr("class", "airline")
+            .on("click", clickAirline)
+
 
     const y = d3.scaleLinear()
         .domain([0, 100])
@@ -250,7 +290,7 @@ function createStackedBarChart(data){
           .data(function(d) { return d; })
           .enter().append("rect")
           .on("click", handleClick)
-          .on("mouseover", function (event,d) { 
+          .on("mouseover", function (event,d) {  
             
             const subGroupName = d3.select(this.parentNode).datum().key
             const value = d.data[subGroupName];
@@ -287,48 +327,171 @@ function createStackedBarChart(data){
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("stroke", "grey")
 
-        createWordcloud(width, height, american);
+        createWordcloud(terms);
+
+    }
+
+    function clickAirline(event, d) {
+
+        d3.select(selected).style("stroke-width", 1)
+                            .style("stroke", "grey")
+        
+        d3.select(selected_leg).style("color", "grey")
+
+        if(selected_leg == this){
+
+            terms = all_air;
+            selected_leg = null;
+        }
+        else{
+            d3.select(this).style("color", "#444647")
+            selected_leg = this;
+    
+            airline = conv[d][1];
+            terms = data_t[airline][1];
+        }
+
+        plot = d3.select("div#stacked").select("#word").selectAll("svg");
+        plot.remove()
+
+        plot = d3.selectAll('.tooltip');
+        plot.remove()
+
+        createWordcloud(terms);
     }
 
     function handleClick(event, d) {
-        console.log(d.data.airline)
+
+        d3.select(selected).style("stroke-width", 1)
+                            .style("stroke", "grey")
+
+        if(selected == this){
+
+            terms = all_air;
+            selected = null;
+        } else {
+            d3.select(this).style("stroke-width", 1.5)
+                        .style("stroke", "black")
+
+            selected = this;
+
+            if(d3.select(this.parentNode).datum().key == "negative"){
+                airline = conv[d.data.airline][1]
+                terms = data_t[airline][1].filter(function(d){ return d.sent == "neg"})
+            }
+
+            if(d3.select(this.parentNode).datum().key == "positive"){
+                airline = conv[d.data.airline][1]
+                terms = data_t[airline][1].filter(function(d){ return d.sent == "pos"})
+            }
+
+            if(d3.select(this.parentNode).datum().key == "neutral"){
+                airline = conv[d.data.airline][1]
+                terms = data_t[airline][1].filter(function(d){ return d.sent == "neut"})
+            }
+        }
+
+        plot = d3.select("div#stacked").select("#word").selectAll("svg");
+        plot.remove()
+
+        plot = d3.selectAll('.tooltip');
+        plot.remove()
+
+        createWordcloud(terms);
     }
 
-    function createWordcloud(width, height, terms) {
+    function createWordcloud(terms) {
+        width = (window.innerWidth*0.9)/2.1, 
+        height = window.innerHeight*0.68;
+
         var svg = d3.select("div#stacked").select("#word").append("svg")
             .attr("width", width)
             .attr("height", height)
             .append("g")
             .attr("width", width)
             .attr("height", height)
-            .attr("transform", "translate(" + - width*0.05 + "," + height*0.02 + ")");
+            .attr("transform", "translate(" + - width*0.05 + "," + height*0.01 + ")");
 
-        
-        var layout = d3.layout.cloud()
-          .size([width, height])
-          .words(terms)
-          .padding(11)       
-          .rotate(0)
-          .fontSize(function(d) { return d.count;})   
-          .font("Verdana") 
-          .text(function(d) { return d.word; }) 
-          .on("end", draw);
-        layout.start();
-    
-        function draw(words) {
-          svg
-            .append("g")
-              .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-              .selectAll("text")
-                .data(words)
-              .enter().append("text")
-                .style("font-size", function(d) { return d.count; })
-                .style("fill", "#808080")
-                .attr("text-anchor", "middle")
-                .style("font-family", "Verdana")
-                .attr("transform", function(d) {
-                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-                .text(function(d) { return d.word; });
+
+        if(terms == all_air){
+            var layout = d3.layout.cloud()
+            .size([width, height])
+            .words(terms)
+            .padding(11)       
+            .rotate(0)
+            .fontSize(function(d) { return d[2] * 80 / 425;})   
+            .font("Verdana") 
+            .text(function(d) { return d[0]; }) 
+            .on("end", draw);
+            layout.start();
+
+            function draw(words) {
+                svg
+                  .append("g")
+                    .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                    .selectAll("text")
+                      .data(words)
+                    .enter().append("text")
+                      .style("font-size", function(d) { return d[2] * 80 / 425; })
+                      .style("fill", fillWords)
+                      .attr("text-anchor", "middle")
+                      .style("font-family", "Verdana")
+                      .attr("transform", function(d) {
+                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                      })
+                      .text(function(d) { return d[0]; });
+            }
+
+        }else{
+            max = d3.max(terms, d => +d.count);
+
+            var layout = d3.layout.cloud()
+            .size([width, height])
+            .words(terms)
+            .padding(11)       
+            .rotate(0)
+            .fontSize(function(d) { return (d.count * 55) / max;})   
+            .font("Verdana") 
+            .text(function(d) { return d.word; }) 
+            .on("end", draw);
+            layout.start();
+
+            function draw(words) {
+                svg
+                  .append("g")
+                    .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                    .selectAll("text")
+                      .data(words)
+                    .enter().append("text")
+                      .style("font-size", function(d) { return (d.count * 55) / max; })
+                      .style("fill", fillWords)
+                      .attr("text-anchor", "middle")
+                      .style("font-family", "Verdana")
+                      .attr("transform", function(d) {
+                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                      })
+                      .text(function(d) { return d.word; });
+        }
+    }
+
+    function fillWords(d){
+
+        var sent;
+
+        if(terms == all_air){
+            sent = d[1]
+        }else{
+            sent = d.sent
+        }
+
+        if(sent == "pos"){
+            return legend[1];
+        }
+        if(sent == "neg"){
+            return legend[2];
+        }
+        else{
+            return "#808080";
+        }
     }
 }

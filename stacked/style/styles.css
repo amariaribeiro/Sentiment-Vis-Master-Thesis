@@ -15,6 +15,15 @@ div#stacked {
     transform: translate(5%, 0%);
     font-size: 15px;
     text-shadow: 0px 0px;
+}.airline{
+    cursor: pointer;
+    text-decoration: underline;
+}
+.airline:hover {
+    color: #444647;
+  }
+.airline:active {
+    transform: translateY(4px);
 }
 .click{
     width: 100%;

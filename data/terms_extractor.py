@@ -4,7 +4,7 @@ from collections import Counter
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 
-filename = "data/us_neut.csv"
+filename = "data/all_air.csv"
 
 sentences = []
 exclude = ['jetblue', 'southwestair', 'united', 'americanair', 'usairways', 'virginamerica', 'http', 'your', 'with', 'that', 'just', 'this', 'service']
@@ -26,7 +26,7 @@ adjectives = [word for word, tag in tagged if tag == 'JJ']
 filtered = filter(lambda x: len(x) > 3 and x not in exclude, adjectives)
 
 word_freq = Counter(filtered)
-top_words = word_freq.most_common(20)  
+top_words = word_freq.most_common(50)  
 print("Top words:", top_words)
 
 file = open('data/us_neut.txt', 'w', encoding="utf-8")

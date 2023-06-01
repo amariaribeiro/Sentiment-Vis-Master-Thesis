@@ -9,16 +9,25 @@ var selected;
 var selected_leg;
 
 //legend colors
-rg = ['#ffffff','#73e603','#F00408']
-yb = ['#ffffff', '#F6e32c', '#2CBBF6']
+rg = ['#808080','#14aa08','#Be0509']
+yb = ['#808080', '#E3DA32', '#2CBBF6']
 
 //sentiments button values
 neutral = ["neutral", "positive", "negative"]
 positive = ["positive", "negative", "neutral"]
 negative = ["negative", "neutral", "positive"]
 
-//airlines list
-airlines = ["American", "Delta", "Southwest", "United", "US Airways", "Virgin America"]
+//airlines list "American", "Delta", "Southwest", "United", "US Airways", "Virgin America" 
+airlines = ["Epsilon", "Zêta", "Êta", "Thêta", "Iota", "Kappa"]
+
+let translation = {
+    "American": {1: "Epsilon"},
+    "Delta": {1: "Zêta"},
+    "Southwest": {1: "Êta"},
+    "United": {1: "Thêta"},
+    "US Airways": {1: "Iota"},
+    "Virgin America": {1: "Kappa"}
+}
 
 //sentiments button flag
 b_positive = false
@@ -50,8 +59,6 @@ let conv = {
 var terms;
 
 var all_air;
-
-//TODO: fazer tamanho com percentagens
 
 function init() {
 
@@ -132,20 +139,20 @@ function color(){
     if (red_green){
         for (x = 0; x < sentiments.length; x++){
             if(sentiments[x] == "neutral"){
-                color_scheme[x] = '#ffffff'
+                color_scheme[x] = '#808080'
             }else if (sentiments[x] == "positive"){
-                color_scheme[x] = '#73e603'
+                color_scheme[x] = '#14aa08'
             }else if (sentiments[x] == "negative"){
-                color_scheme[x] = '#F00408'
+                color_scheme[x] = '#Be0509'
             }
         }
 
     } else if (yellow_blue){
         for (x = 0; x < sentiments.length; x++){
             if(sentiments[x] == "neutral"){
-                color_scheme[x] = '#ffffff'
+                color_scheme[x] = '#808080'
             }else if (sentiments[x] == "positive"){
-                color_scheme[x] = '#F6e32c'
+                color_scheme[x] = '#E3DA32'
             }else if (sentiments[x] == "negative"){
                 color_scheme[x] = '#2CBBF6'
             }
@@ -178,8 +185,6 @@ function handlingButton(sentiment){
 function createStackedBarChart(data){
     var data = data;
 
-    var groups = d3.map(data, function(d){return(d.airline)})
-
     width = (window.innerWidth*0.9)/2.1, 
     height = window.innerHeight*0.68,
 
@@ -195,7 +200,7 @@ function createStackedBarChart(data){
                 .attr("width", width)
 
                 svg.append("circle").attr("cx", width/2 - 40).attr("cy",12).attr("r", 10)
-                    .style("fill", "#ffffff")
+                    .style("fill", "#808080")
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
                     .style("opacity", 0)
@@ -253,7 +258,7 @@ function createStackedBarChart(data){
             .append("g").attr("transform", "translate(" + width*0.1 + "," + height*0.05 + ")");
 
     const x = d3.scaleBand()
-        .domain(groups)
+        .domain(airlines)
         .range([0, width*0.8])
         .padding([0.2])
   
@@ -301,7 +306,7 @@ function createStackedBarChart(data){
                tooltip.transition().duration(200).style("opacity", 0.9);
                tooltip
                    .html(function (e) {
-                       return "Sentiment " + subGroupName + "<br>" + value.toFixed(2) + "%";
+                       return subGroupName.charAt(0).toUpperCase() + subGroupName.slice(1) + " sentiment"  + "<br>" + value.toFixed(2) + "%";
                    })
                    .style("left", event.pageX - 130 + "px")
                    .style("top", event.pageY - 28 + "px");
@@ -318,7 +323,7 @@ function createStackedBarChart(data){
 
             tooltip.transition().duration(200).style("opacity", 0);
             })
-            .attr("x", function(d) { return x(d.data.airline); })
+            .attr("x", function(d) { return x(translation[d.data.airline][1]); })
             .attr("y", function(d) { return y(0); })
             .attr("width",x.bandwidth())
             .transition()
@@ -346,15 +351,14 @@ function createStackedBarChart(data){
         else{
             d3.select(this).style("color", "#444647")
             selected_leg = this;
+
+            air = Object.keys(translation).find(key => translation[key][1] === d);
     
-            airline = conv[d][1];
+            airline = conv[air][1];
             terms = data_t[airline][1];
         }
 
         plot = d3.select("div#stacked").select("#word").selectAll("svg");
-        plot.remove()
-
-        plot = d3.selectAll('.tooltip');
         plot.remove()
 
         createWordcloud(terms);
@@ -392,9 +396,6 @@ function createStackedBarChart(data){
         }
 
         plot = d3.select("div#stacked").select("#word").selectAll("svg");
-        plot.remove()
-
-        plot = d3.selectAll('.tooltip');
         plot.remove()
 
         createWordcloud(terms);
@@ -491,7 +492,7 @@ function createStackedBarChart(data){
             return legend[2];
         }
         else{
-            return "#808080";
+            return legend[0];
         }
     }
 }

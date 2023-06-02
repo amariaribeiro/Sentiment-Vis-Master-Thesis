@@ -297,7 +297,7 @@ function createStackedBarChart(data){
                tooltip.transition().duration(200).style("opacity", 0.9);
                tooltip
                    .html(function (e) {
-                       return subGroupName.charAt(0).toUpperCase() + subGroupName.slice(1) + " sentiment"  + "<br>" + value.toFixed(2) + "%";
+                       return subGroupName.charAt(0).toUpperCase() + subGroupName.slice(1) + " sentiment"  + "<br>" + value;
                    })
                    .style("left", event.pageX - 130 + "px")
                    .style("top", event.pageY - 28 + "px");

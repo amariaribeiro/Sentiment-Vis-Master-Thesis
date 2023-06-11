@@ -197,9 +197,9 @@ function createStackedBarChart(data){
                 .select("#legend")
                 .append("svg")
                 .attr("height", 30)
-                .attr("width", width)
+                .attr("width", width*2)
 
-                svg.append("circle").attr("cx", width/2 - 40).attr("cy",12).attr("r", 10)
+                svg.append("circle").attr("cx", width + 80).attr("cy", 17).attr("r", 10)
                     .style("fill", "#808080")
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
@@ -208,8 +208,8 @@ function createStackedBarChart(data){
                 
                 svg.append("text")
                     .attr("text-anchor", "left")
-                    .attr("x", (width/2 - 25))
-                    .attr("y", 17)
+                    .attr("x", (width + 100))
+                    .attr("y", 22)
                     .style("opacity", 0)
                     .transition().duration(1000).style("opacity", 1)
                     .style('fill', '#444647')
@@ -217,7 +217,7 @@ function createStackedBarChart(data){
                     .attr("font-size", "12px")
 
 
-                svg.append("circle").attr("cx", width/3 - 40).attr("cy",12).attr("r", 10)
+                svg.append("circle").attr("cx", width - 140).attr("cy",17).attr("r", 10)
                     .style("fill", legend[1])
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
@@ -226,15 +226,15 @@ function createStackedBarChart(data){
                 
                 svg.append("text")
                     .attr("text-anchor", "left")
-                    .attr("x", (width/3 - 25))
-                    .attr("y", 17)
+                    .attr("x", (width - 120))
+                    .attr("y", 22)
                     .style("opacity", 0)
                     .style('fill', '#444647')
                     .transition().duration(1000).style("opacity", 1)
                     .text("Positive")
                     .attr("font-size", "12px");
 
-                svg.append("circle").attr("cx", width/3*2 - 40).attr("cy",12).attr("r", 10)
+                svg.append("circle").attr("cx", width - 30).attr("cy",17).attr("r", 10)
                     .style("fill", legend[2])
                     .style('stroke', '#444647')
                     .style('stroke-width', 1)
@@ -243,13 +243,23 @@ function createStackedBarChart(data){
                 
                 svg.append("text")
                     .attr("text-anchor", "left")
-                    .attr("x", (width/3*2 - 25))
-                    .attr("y", 17)
+                    .attr("x", (width - 10))
+                    .attr("y", 22)
                     .style('fill', '#444647')
                     .style("opacity", 0)
                     .transition().duration(1000).style("opacity", 1)
                     .text("Negative")
                     .attr("font-size", "12px")
+
+                svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", 10)
+                    .attr("y", 22)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                    .style('fill', '#444647')
+                    .text("Percentages")
+                    .attr("font-size", "11px")
         
     svg = d3.select("div#stacked").select("#st")
 			.append("svg")
@@ -296,6 +306,8 @@ function createStackedBarChart(data){
           .enter().append("rect")
           .on("click", handleClick)
           .on("mouseover", function (event,d) {  
+
+            d3.select(this).style("cursor", "pointer"); 
             
             const subGroupName = d3.select(this.parentNode).datum().key
             const value = d.data[subGroupName];
@@ -331,6 +343,16 @@ function createStackedBarChart(data){
             .attr("y", function(d) { return y(d[1]); })
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("stroke", "grey")
+
+            svg.append("text")
+                    .attr("text-anchor", "left")
+                    .attr("x", (width/2 - 80))
+                    .attr("y", height-40)
+                    .style("opacity", 0)
+                    .transition().duration(1000).style("opacity", 1)
+                    .style('fill', '#444647')
+                    .text("Airlines")
+                    .attr("font-size", "11px")
 
         createWordcloud(terms);
 
